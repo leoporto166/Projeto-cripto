@@ -4,7 +4,7 @@ import home from "./home.module.css"
 import { BsSearch } from "react-icons/bs"
 import { useState, type FormEvent, useEffect } from "react"
 
-interface ApiProps{
+export interface ApiProps{
     id: string;
     name: string;
     symbol: string;
@@ -31,6 +31,7 @@ interface DataProps{
 export function Home(){
     const [input, setInput] = useState("")
     const [api, setApi] = useState<ApiProps[]>([])
+    const[offSet, setOffSet] = useState(0)
 
 
 
@@ -45,15 +46,22 @@ export function Home(){
     }
 
     function handleGetMore(){
-        alert("CLICOU")
+
+        if(offSet === 0){
+            setOffSet(10)
+        } else{
+            setOffSet(offSet + 10)
+        }
+        
+
     }
 
     useEffect(() => {
         getData();
-    }, [])
+    }, [offSet])
 
     async function getData() {
-        fetch("https://rest.coincap.io/v3/assets?limit=10&offset=0&apiKey=af8f8e664700c3f359e5119955b33df610b4f0f7584678aeb537c45ed63f8dee")
+        fetch(`https://rest.coincap.io/v3/assets?limit=10&offset=${offSet}&apiKey=af8f8e664700c3f359e5119955b33df610b4f0f7584678aeb537c45ed63f8dee`)
         .then(response => response.json())
         .then((data: DataProps)=> {
             const apiData = data.data
@@ -80,8 +88,8 @@ export function Home(){
                 return formatado
             })
 
-            console.log(resultadoFormatado )
-            setApi(resultadoFormatado);
+            const addMoedas = [...api, ...resultadoFormatado]
+            setApi(addMoedas);
 
         })
         
